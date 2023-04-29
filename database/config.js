@@ -9,7 +9,7 @@ class MySQL{
                 user: 'root', 
                 password: 'Ady24q0xoaRyyoQ3R7gb',
                 database: 'railway',
-                port: '6178'ñ
+                port: '6178'
             });
             return cnn;
         }catch (error) {
