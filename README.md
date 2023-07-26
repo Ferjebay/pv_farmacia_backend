@@ -1,2 +1,2 @@
 #Description
-## App de prueba, realización de un crud
+## Backend punto de venta para farmacias con facturacion electronica
