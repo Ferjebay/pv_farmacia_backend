@@ -5,8 +5,10 @@ const {
   articuloPost, 
   articulosDelete, 
   articuloPut, 
-  getArticuloByIMEI, 
-  contarArticulos } = require('../controllers/articuloController');
+  contarArticulos, 
+  getArticuloByCodBarra,
+  productByExpirar,
+  updateDate} = require('../controllers/articuloController');
 const { validarCampos, validarJWT } = require('../middlewares');
 
 const router = Router();
@@ -15,6 +17,11 @@ router.post('/', [
   validarJWT,
   validarCampos,
 ], articuloPost); 
+
+router.get('/productosByExpirar', [
+  validarJWT,
+  validarCampos,
+], productByExpirar); 
 
 router.post('/contarArticulos', [
   validarJWT,
@@ -26,15 +33,20 @@ router.put('/:articulo_id', [
   validarCampos,
 ], articuloPut); 
 
+router.put('/updateDate/:articulo_id', [
+  validarJWT,
+  validarCampos,
+], updateDate); 
+
 router.delete('/:articulo_id', [
   validarJWT,  
   validarCampos
 ], articulosDelete); 
 
-router.get('/:articulo_imei', [
+router.get('/:codBarra/:pv_id', [
   validarJWT,  
   validarCampos
-], getArticuloByIMEI); 
+], getArticuloByCodBarra); 
 
 module.exports = router;
 

@@ -1,11 +1,80 @@
 const { response } = require('express');
 const MySQL = require('../database/config');
 
-const puntos_ventasGet = async (req, res = response) =>{
+var printer = require("../assets/lib")
+const ThermalPrinter = require('node-thermal-printer').printer;
+const Types = require('node-thermal-printer').types;
+
+const imprimirTicket = async (req, res = response) =>{
+   
+    let epsonThermalPrinter = new ThermalPrinter({
+        type: Types.EPSON,
+        width: 40,
+        characterSet: 'SLOVENIA',
+        removeSpecialCharacters: false,
+        lineCharacter: "-",
+    });
+
+    epsonThermalPrinter.alignCenter();
+    epsonThermalPrinter.println("Hello World");                               
+    epsonThermalPrinter.print("Hello World"); 
+
+
+    epsonThermalPrinter.print("Hello World"); 
+    epsonThermalPrinter.newLine();
+    epsonThermalPrinter.bold(true);
+
+    epsonThermalPrinter.drawLine(); 
+
+    epsonThermalPrinter.tableCustom([                                       
+        { text:"Cant.", align:"LEFT", width:0.25, bold:true },
+        { text:"Producto", align:"CENTER", width:0.5, bold:true },
+        { text:"Total", align:"RIGHT", cols:8, bold:true }
+    ]);
+    epsonThermalPrinter.tableCustom([                                      
+        { text:"  2", align:"LEFT", width:0.25, bold:true },
+        { text:"Vaporez forte 400mg", align:"CENTER", width:0.5, bold:true },
+        { text:"1.75", align:"RIGHT", cols:8, bold:true }
+    ]);
+
+    
+    epsonThermalPrinter.newLine();
+    epsonThermalPrinter.print("Hello World"); 
+    epsonThermalPrinter.print("Hello World"); 
+    epsonThermalPrinter.openCashDrawer();
+
+    epsonThermalPrinter.alignCenter();
+    epsonThermalPrinter.newLine();
+    epsonThermalPrinter.println("Texto Centrado");  
+    epsonThermalPrinter.newLine();
+    
+    // epsonThermalPrinter.partialCut();
+    // epsonThermalPrinter.cut();   
+
+    printer.printDirect({
+        data: epsonThermalPrinter.getBuffer(),
+        printer: process.env[3], // printer name, if missing then will print to default printer
+        success:function(jobID){
+            console.log("sent to printer with ID: "+jobID);
+        },
+        error:function(err){
+            console.log(err);
+        }
+    });
+
+    res.json({ msg: 'imprimiendo' })            
+}
+
+const puntos_ventasGet = async (req, res = response) => {
+    const estado = req.params.estado;
     const mysql = new MySQL();
 
     try{
-        const query = `SELECT * FROM puntos_ventas`;
+        let query = `SELECT * FROM puntos_ventas`;
+
+        if ( estado === 'true' ) query += ` WHERE estado = 1` ;
+
+        query += ` ORDER BY id DESC`;
 
         const puntos_ventas = await mysql.ejecutarQuery( query );
                 
@@ -17,13 +86,14 @@ const puntos_ventasGet = async (req, res = response) =>{
 }
 
 const pvPost = async (req, res = response) =>{
-    const { punto_emision, nombre, direccion } = req.body;
+    
+    const { punto_emision, secuencia_factura, nombre, direccion } = req.body;
     const mysql = new MySQL();
 
     try {
         //Verificar si el correo existe
-        const query = `INSERT INTO puntos_ventas(nombre, punto_emision, direccion) 
-                VALUES( '${ nombre }', '${ punto_emision }', '${ direccion }' )`;
+        const query = `INSERT INTO puntos_ventas(empresa_id, nombre, direccion, codigo_establecimiento, punto_emision, secuencia_factura) 
+                VALUES( 1, '${ nombre }', '${ direccion }', 3, ${ punto_emision }, ${ secuencia_factura })`;
         await mysql.ejecutarQuery( query );
                 
         res.json({ msg: "punto de venta creado" })        
@@ -36,15 +106,17 @@ const pvPost = async (req, res = response) =>{
 }
 
 const pvPut = async (req, res = response) =>{
-    const { id, nombre, punto_emision, direccion } = req.body;
+    const { id, nombre, punto_emision, secuencia_factura, direccion } = req.body;
     const mysql = new MySQL();
 
     try {
         //Verificar si el correo existe
         let query = `UPDATE puntos_ventas SET 
             nombre        = '${ nombre }',
+            direccion     = '${ direccion }',
             punto_emision = '${ punto_emision }',
-            direccion     = '${ direccion }' WHERE id = ${ id }`;
+            secuencia_factura = '${ secuencia_factura }' WHERE id = ${ id }`;
+        
         await mysql.ejecutarQuery( query );
                 
         res.json({ msg: "punto de venta editado" })        
@@ -62,6 +134,7 @@ const setEstado = async (req, res = response) =>{
 
     try {
         const query = `UPDATE puntos_ventas SET estado = ${ estado } WHERE id = ${ id }`;
+        console.log( query );
         await mysql.ejecutarQuery( query );
                 
         res.json({ msg: "Punto de Venta Actualizado" })        
@@ -86,6 +159,7 @@ const borrarPV = async (req, res = response) =>{
 
 module.exports = {
   borrarPV,
+  imprimirTicket,
   puntos_ventasGet,
   pvPost,
   pvPut,

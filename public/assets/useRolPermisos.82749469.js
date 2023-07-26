@@ -1,0 +1,1 @@
+import{u}from"./Api.e3a65a9d.js";const d=()=>{const s=u();return{encontrarPermisosId:(r,t)=>{const e=[];return r.value.forEach(i=>{t.forEach(n=>{n.children.forEach(a=>{a.children.find(o=>{o.label==i&&e.push(o.id)})})})}),e},validarPermisos:r=>!!(s.permisos!==null&&s.permisos.includes(r))}};export{d as u};

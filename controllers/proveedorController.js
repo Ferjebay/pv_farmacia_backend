@@ -2,10 +2,15 @@ const { response } = require('express');
 const MySQL = require('../database/config');
 
 const proveedoresGet = async (req, res = response) =>{
+    const estado = req.params.estado;
     const mysql = new MySQL();
 
     try{
-        const query = `SELECT * FROM proveedores ORDER BY id DESC`;
+        let query = `SELECT * FROM proveedores`;
+
+        if ( estado === 'true' ) query += ` WHERE estado = 1` ;
+
+        query += ` ORDER BY id DESC`;
 
         const proveedores = await mysql.ejecutarQuery( query );
                 

@@ -6,7 +6,7 @@ const { validarCampos, validarJWT } = require('../middlewares');
 
 const router = Router();
 
-router.get('/', [
+router.get('/:estado', [
   validarJWT,
   validarCampos,
 ], proveedoresGet); 

@@ -6,13 +6,14 @@ const {
   getVentas, 
   anularVenta, 
   detalleVenta, 
-  puntoVentasGet} = require('../controllers/ventaController');
+  puntoVentasGet,
+  reimprimirFactura} = require('../controllers/ventaController');
 
 const { validarCampos, validarJWT } = require('../middlewares');
 
 const router = Router();
 
-router.get('/getNoFactura', [
+router.get('/getNoFactura/:pv_id', [
   validarJWT,
   validarCampos,
 ], getNumFactura); 
@@ -41,6 +42,11 @@ router.post('/add', [
   validarJWT,
   validarCampos,
 ], addVenta); 
+
+router.post('/imprimirFactura', [
+  validarJWT,
+  validarCampos,
+], reimprimirFactura); 
 
 module.exports = router;
 

@@ -1,0 +1,1 @@
+import{k as a,q as e}from"./index.e02e0fd9.js";function n(){return a(e)}const c=()=>{const t=n();return{mostrarNotify:(r,s,o="top-right")=>{t.notify({type:r,message:s,position:o})}}};export{n as a,c as u};

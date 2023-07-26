@@ -8,10 +8,11 @@ const login = async (req, res = response) =>{
         var { email, password: userPassword } = req.body;
         const mysql = new MySQL();
         //Verificar si el correo existe
-        const query = `SELECT u.*, r.nombre AS 'rol_name', pv.punto_emision
-                    FROM usuarios u, roles r, puntos_ventas pv  
+        const query = `SELECT u.*, r.nombre AS 'rol_name', pv.punto_emision, e.id AS empresa_id
+                    FROM usuarios u, roles r, puntos_ventas pv, empresas e   
                     WHERE r.id = u.rol_id AND
                     u.pv_id = pv.id AND
+                    pv.empresa_id = e.id AND
                     u.email = '${ email }' `;
         const usuario = await mysql.ejecutarQuery( query );
 
@@ -34,7 +35,7 @@ const login = async (req, res = response) =>{
             })
         }
         // //Generar JWT
-        const { estado, password, ...rest } = usuario[0];
+        const { estado, password, cedula, celular, ...rest } = usuario[0];
         const token = await generarJWT( rest );
 
         res.json({

@@ -1,15 +1,20 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { puntos_ventasGet, pvPost, pvPut, setEstado, borrarPV } = require('../controllers/pvController');
+const { puntos_ventasGet, pvPost, pvPut, setEstado, borrarPV, imprimirTicket } = require('../controllers/pvController');
 
 const { validarCampos, validarJWT } = require('../middlewares');
 
 const router = Router();
 
-router.get('/', [
+router.get('/:estado', [
   validarJWT,
   validarCampos,
 ], puntos_ventasGet); 
+
+router.get('/imprimirTicket', [
+  // validarJWT,
+  validarCampos,
+], imprimirTicket); 
 
 router.post('/', [
   validarJWT,
